@@ -1,0 +1,28 @@
+{
+  "name": "compliance-reporting-server",
+  "version": "1.0.0",
+  "description": "Production-ready Azure compliance system backend",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "test": "node --test tests/*.test.js"
+  },
+  "dependencies": {
+    "@azure/arm-monitor": "latest",
+    "@azure/arm-policy": "latest",
+    "@azure/arm-resources": "latest",
+    "@azure/identity": "latest",
+    "@azure/msal-node": "latest",
+    "@azure/notification-hubs": "latest",
+    "@azure/openai": "^1.0.0-beta.12",
+    "@azure/storage-blob": "latest",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mssql": "^10.0.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
