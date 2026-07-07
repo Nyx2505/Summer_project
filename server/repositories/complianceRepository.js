@@ -1,3 +1,4 @@
+import { localAzureStorage } from '../services/localAzureStorage.js';
 import { getSqlPool } from '../config/azure.js';
 
 // In-Memory Database cache for local mock fallback compatibility
@@ -34,7 +35,20 @@ export const complianceRepository = {
     } catch (e) {
       // Fallback
     }
+    const controls = await localAzureStorage.read(
+    "compliance-controls.json",
+    memControls
+);
+
+if (controls.length === 0) {
+    await localAzureStorage.write(
+        "compliance-controls.json",
+        memControls
+    );
     return memControls;
+}
+
+return controls;
   },
 
   async getControlById(id) {
@@ -77,7 +91,20 @@ export const complianceRepository = {
     } catch (e) {
       // Fallback
     }
+    const tasks = await localAzureStorage.read(
+    "tasks.json",
+    memTasks
+);
+
+if (tasks.length === 0) {
+    await localAzureStorage.write(
+        "tasks.json",
+        memTasks
+    );
     return memTasks;
+}
+
+return tasks;
   },
 
   async createTask(task) {
@@ -132,7 +159,12 @@ export const complianceRepository = {
     } catch (e) {
       // Fallback
     }
-    return memScores;
+   const scores = await localAzureStorage.read(
+    "scores.json",
+    memScores
+);
+
+return scores;
   },
 
   async updateScores(scores) {
