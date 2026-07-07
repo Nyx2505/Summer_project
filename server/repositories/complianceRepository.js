@@ -1,6 +1,4 @@
-import { localAzureStorage } from '../services/localAzureStorage.js';
 import { getSqlPool } from '../config/azure.js';
-import { AzureDatabase } from '../simulation/azureDatabase.js';
 
 // In-Memory Database cache for local mock fallback compatibility
 let memControls = [
@@ -30,30 +28,13 @@ export const complianceRepository = {
   // Read operations
   async getAllControls() {
     try {
-        const pool = await getSqlPool();
-        const result = await pool.request().query(
-            'SELECT * FROM ComplianceControls ORDER BY id;'
-        );
-
-        if (result.recordset.length > 0) {
-            return result.recordset;
-        }
+      const pool = await getSqlPool();
+      const result = await pool.request().query('SELECT * FROM ComplianceControls ORDER BY id;');
+      if (result.recordset.length > 0) return result.recordset;
     } catch (e) {
-        console.log("[Azure SQL] Using simulated database.");
+      // Fallback
     }
-
-    return await AzureDatabase.getControls();
-};
-
-if (controls.length === 0) {
-    await localAzureStorage.write(
-        "compliance-controls.json",
-        memControls
-    );
     return memControls;
-}
-
-return controls;
   },
 
   async getControlById(id) {
@@ -88,32 +69,15 @@ return controls;
     return this.getControlById(id);
   },
 
- async getAllTasks() {
+  async getAllTasks() {
     try {
-        const pool = await getSqlPool();
-        const result = await pool.request().query(
-            'SELECT * FROM Tasks ORDER BY deadline;'
-        );
-
-        if (result.recordset.length > 0) {
-            return result.recordset;
-        }
+      const pool = await getSqlPool();
+      const result = await pool.request().query('SELECT * FROM Tasks ORDER BY deadline;');
+      if (result.recordset.length > 0) return result.recordset;
     } catch (e) {
-        console.log("[Azure SQL] Using simulated database.");
+      // Fallback
     }
-
-    return await AzureDatabase.getTasks();
-};
-
-if (tasks.length === 0) {
-    await localAzureStorage.write(
-        "tasks.json",
-        memTasks
-    );
     return memTasks;
-}
-
-return tasks;
   },
 
   async createTask(task) {
@@ -162,22 +126,13 @@ return tasks;
 
   async getScores() {
     try {
-        const pool = await getSqlPool();
-        const result = await pool.request().query(
-            'SELECT TOP 1 * FROM ComplianceScores ORDER BY calculatedAt DESC;'
-        );
-
-        if (result.recordset.length > 0) {
-            return result.recordset[0];
-        }
+      const pool = await getSqlPool();
+      const result = await pool.request().query('SELECT TOP 1 * FROM ComplianceScores ORDER BY calculatedAt DESC;');
+      if (result.recordset.length > 0) return result.recordset[0];
     } catch (e) {
-        console.log("[Azure SQL] Using simulated database.");
+      // Fallback
     }
-
-    return await AzureDatabase.getScores();
-};
-
-return scores;
+    return memScores;
   },
 
   async updateScores(scores) {
